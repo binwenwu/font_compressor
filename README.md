@@ -1,4 +1,16 @@
 # character-compress
+```TEXT
+.
+├── 1.txt
+├── Milky-Han-Mono-CN-Heavy.json
+├── Milky-Han-Mono-CN-Heavy.ttf
+├── README.md
+├── Source-KeynoteartHans-Regular.json
+├── Source-KeynoteartHans-Regular.otf
+└── character-compress.py
+
+1 directory, 7 files
+```
 > 根据json键值内容从字体包中提取所需文字，从而实现字体包压缩
 >
 > 主要针对的是ttf与otf两种类型的字体包
