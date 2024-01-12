@@ -7,7 +7,7 @@
 - json文件中给出需要提取的文字/单词/句子的中英文的中英文KV对
 ```JSON
 {
-	"Data": "数据",
+    "Data": "数据",
     "Computing": "计算",
     "Development ": "开发",
     "Application": "应用",
