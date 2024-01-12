@@ -4,7 +4,6 @@
 import sys
 import json
 import os
-from fontTools.ttLib import TTFont
 from fontTools import subset
 
 '''
