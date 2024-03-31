@@ -2,7 +2,7 @@
 
 >Extract the required text from the font package based on the JSON key value content, thereby achieving font package compression
 >
->Mainly targeting two types of font packages: `ttf ` and `otf`
+>Mainly targeting two types of font packages: `ttf` and `otf`
 
 ## Catalogue
 
