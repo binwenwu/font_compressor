@@ -43,9 +43,9 @@ def generate(source_font, json_file, out_file):
 
 if __name__ == '__main__':
 
-    source_font = "./Source-KeynoteartHans-Regular.otf"
-    json_file = "./Source-KeynoteartHans-Regular.json"
-    out_file = "./Source-KeynoteartHans-Regular-Compress.otf"
+    source_font = "./Milky-Han-Mono-CN-Heavy.ttf"
+    json_file = "./Milky-Han-Mono-CN-Heavy.json"
+    out_file = "./Milky-Han-Mono-CN-Heavy-Compress.ttf"
 
     generate(source_font, json_file, out_file)
 
