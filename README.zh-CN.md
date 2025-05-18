@@ -1,7 +1,19 @@
-# 字体压缩工具
-![](https://cdn.jsdelivr.net/gh/binwenwu/picgo_02/img/20250518170849.png)
 [English](README.md) | 简体中文
 
+<h1 align="center">
+  <img src="https://cdn.jsdelivr.net/gh/binwenwu/picgo_02/img/icon%2017.05.53.png" alt="Clash" width="128" />
+  <br>
+Font Compressor
+  <br>
+</h1>
+<h3 align="center">
+一款基于 <a href="https://wiki.python.org/moin/PyQt">PyQt</a> 构建的字体压缩软件.
+</h3>
+
+# 预览
+![](https://cdn.jsdelivr.net/gh/binwenwu/picgo_02/img/20250518170849.png)
+
+# 字体压缩工具
 这是一个基于Python的字体压缩工具，可以根据用户提供的文字，从原始字体文件中提取需要的字形，生成体积更小的字体文件。
 
 ## 功能特点

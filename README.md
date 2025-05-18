@@ -1,7 +1,21 @@
-# Font Compressor
-![](https://cdn.jsdelivr.net/gh/binwenwu/picgo_02/img/20250518170744.png)
 English | [简体中文](README.zh-CN.md)
 
+<h1 align="center">
+  <img src="https://cdn.jsdelivr.net/gh/binwenwu/picgo_02/img/icon%2017.05.53.png" alt="Clash" width="128" />
+  <br>
+Font Compressor
+  <br>
+</h1>
+<h3 align="center">
+A font compression software based on <a href="https://wiki.python.org/moin/PyQt">PyQt</a>.
+</h3>
+
+
+# Preview
+![](https://cdn.jsdelivr.net/gh/binwenwu/picgo_02/img/20250518170744.png)
+
+
+# Font Compressor
 A Python-based font compression tool that extracts required characters from original font files based on user-provided text, generating smaller font files.
 
 ## Features
