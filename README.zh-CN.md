@@ -3,7 +3,7 @@
 [English](README.md) | 简体中文
 
 这是一个基于Python的字体压缩工具，可以根据用户提供的文字，从原始字体文件中提取需要的字形，生成体积更小的字体文件。
-
+![](https://cdn.jsdelivr.net/gh/binwenwu/picgo_02/img/20250518170849.png)
 ## 功能特点
 
 - 支持多种字体格式（.ttf, .otf, .woff, .woff2）

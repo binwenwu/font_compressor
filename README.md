@@ -3,7 +3,7 @@
 English | [简体中文](README.zh-CN.md)
 
 A Python-based font compression tool that extracts required characters from original font files based on user-provided text, generating smaller font files.
-
+![](https://cdn.jsdelivr.net/gh/binwenwu/picgo_02/img/20250518170744.png)
 ## Features
 
 - Supports multiple font formats (.ttf, .otf, .woff, .woff2)
