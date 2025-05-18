@@ -19,7 +19,7 @@ A Python-based font compression tool that extracts required characters from orig
    - PyQt5
 
 ## Installation
-
+> You can directly download the executable file in the release, or choose to build it yourself
 1. Clone or download this repository
 2. Install dependencies:
    ```
