@@ -1,0 +1,6 @@
+.DS_Store
+legacy-python/
+playwright-report/
+test-results/
+coverage/
+*.log

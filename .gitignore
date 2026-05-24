@@ -1,0 +1,15 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+node_modules
+.next
+out
+dist
+coverage
+playwright-report
+test-results
+*.log
+.env
+.env*
+!.env.example
+.vercel

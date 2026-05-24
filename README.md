@@ -1,68 +1,66 @@
-English | [简体中文](README.zh-CN.md)
-
-<h1 align="center">
-  <img src="https://cdn.jsdelivr.net/gh/binwenwu/picgo_02/img/icon%2017.05.53.png" alt="Clash" width="128" />
-  <br>
-Font Compressor
-  <br>
-</h1>
-<h3 align="center">
-A font compression software based on <a href="https://wiki.python.org/moin/PyQt">PyQt</a>.
-</h3>
-
-
-# Preview
-![](https://cdn.jsdelivr.net/gh/binwenwu/picgo_02/img/20250518170744.png)
-
-
 # Font Compressor
-A Python-based font compression tool that extracts required characters from original font files based on user-provided text, generating smaller font files.
 
-## Features
+一个浏览器优先的字体子集化工具。粘贴需要保留的文字，选择字体文件，然后生成只包含目标字形的压缩字体文件。
 
-- Supports multiple font formats (.ttf, .otf, .woff, .woff2)
-- Clean and intuitive graphical user interface
-- Supports Chinese and English interface switching
-- Preserves key font features and layout information
+## 当前阶段
 
-## Requirements
+- Next.js + TypeScript 网页项目已搭建完成
+- 旧版 Python/PyQt 实现已归档到 `legacy-python/`
+- 字体处理在浏览器 Web Worker 中运行
+- 字体文件只在本地浏览器处理，不上传到服务器
+- 支持输入格式：TTF、OTF、WOFF、WOFF2
+- 支持输出格式：WOFF2、WOFF、TTF
+- `WOFF2` 编码依赖 `public/woff2.wasm`
+- 支持中文 / English 界面切换，并记住上次选择
+- 支持原字体和压缩字体预览
+- 压缩后会验证生成字体是否能被浏览器加载
+- 压缩结果会显示保留字形数量和缺失字符提示
 
-1. Python 3.6+
-2. Dependencies:
-   - fonttools
-   - PyQt5
+## 本地开发
 
-## Installation
-> You can directly download the executable file in the release, or choose to build it yourself
-1. Clone or download this repository
-2. Install dependencies:
-   ```
-   pip install -r requirements.txt
-   ```
+建议使用 Node.js `20.19.0` 或更高版本。
 
-## Usage
+```bash
+npm install
+npm run dev
+```
 
-1. Run the program:
-   ```
-   python main.py
-   ```
-2. Select the font type (.ttf, .otf, etc.) in the interface
-3. Click the "Browse" button to select the font file to compress
-4. Enter or paste the text you want to preserve in the text box
-5. Select the path to save the compressed font file
-6. Click the "Compress Font" button to start compression
-7. After compression is complete, the compressed font file will be generated in the specified path
+打开：
 
-## Technical Principle
+```text
+http://localhost:3000
+```
 
-This tool uses the subset module of the fontTools library to implement font subsetting. By analyzing the text provided by the user, it extracts the required characters and only retains the glyph data corresponding to these characters from the original font, thereby significantly reducing the size of the font file.
+## 验证
 
-## Notes
+```bash
+npm run verify
+```
 
-- The compressed font will only contain the characters you specify; other characters will not be displayed
-- It is recommended to back up the original font file before compression
-- Some special fonts may have compatibility issues
+`verify` 会依次执行 lint、生产构建、Playwright 端到端测试和依赖安全检查。
 
-## License
+## 部署
 
-MIT 
+这个项目可以直接部署到 Vercel。默认构建命令：
+
+```bash
+npm run build
+```
+
+输出由 Next.js 处理，不需要额外后端服务。
+
+推荐设置：
+
+- Framework Preset: `Next.js`
+- Install Command: `npm install`
+- Build Command: `npm run build`
+- Output Directory: 留空，交给 Next.js / Vercel 自动处理
+- Environment Variables: 无必需项
+
+`vercel.json` 已为 `public/woff2.wasm` 配置 `application/wasm` 和长期缓存头。
+
+## 注意事项
+
+- 浏览器会在本地加载和解析字体，超大字体可能需要更长处理时间。
+- 如果某个字体输出 WOFF2 失败，可以先切换为 WOFF 或 TTF 输出。
+- 部分字体缺少用户粘贴的字形时，结果区会显示缺失字符提示。
