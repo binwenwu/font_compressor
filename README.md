@@ -2,6 +2,10 @@
 
 一个浏览器优先的字体子集化工具。粘贴需要保留的文字，选择字体文件，然后生成只包含目标字形的压缩字体文件。
 
+## 项目截图
+
+![Font Compressor web interface](https://cdn.jsdelivr.net/gh/binwenwu/picgo_02/img/20260524184540785.png)
+
 ## 当前阶段
 
 - Next.js + TypeScript 网页项目已搭建完成
