@@ -4,12 +4,15 @@
 
 ## 项目截图
 
-![Font Compressor web interface](https://cdn.jsdelivr.net/gh/binwenwu/picgo_02/img/20260524184540785.png)
+![Font Compressor web interface](https://cdn.jsdelivr.net/gh/binwenwu/picgo_02/img/20260612174528346.png)
 
 ## 当前阶段
 
 - Next.js + TypeScript 网页项目已搭建完成
 - 旧版 Python/PyQt 实现已归档到 `legacy-python/`
+- 已重构为高级字体压缩工作台界面，包含响应式布局、状态进度、结果指标和双字体预览
+- 使用 GSAP 提供克制的界面进入和结果反馈动效
+- 使用 Three.js 渲染轻量字形背景，增强页面空间感
 - 字体处理在浏览器 Web Worker 中运行
 - 字体文件只在本地浏览器处理，不上传到服务器
 - 支持输入格式：TTF、OTF、WOFF、WOFF2

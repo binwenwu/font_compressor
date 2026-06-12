@@ -1,25 +1,41 @@
 "use client";
 
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
 import {
   AlertTriangle,
+  Archive,
   CheckCircle2,
+  CircleDot,
   Download,
   FileText,
+  FileType,
+  Gauge,
+  Languages,
+  Layers2,
+  Loader2,
   SearchCheck,
   Settings,
+  ShieldCheck,
+  SlidersHorizontal,
+  Sparkles,
   Type,
   Upload,
+  WandSparkles,
   Zap,
 } from "lucide-react";
 import {
   type ChangeEvent,
+  type CSSProperties,
   type DragEvent,
+  type ReactNode,
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
+import { TypeOrbitScene } from "@/components/type-orbit-scene";
 import {
   createOutputName,
   codePointsToText,
@@ -33,6 +49,8 @@ import {
   type SubsetOptions,
   type SupportedFontType,
 } from "@/lib/font-model";
+
+gsap.registerPlugin(useGSAP);
 
 type WorkerResponse =
   | {
@@ -106,27 +124,28 @@ const copy = {
     languageSwitch: "语言切换",
     zh: "中文",
     en: "EN",
+    labLabel: "字体子集工作台",
     heroSubtitle: "只保留你需要的字形。",
     pasteText: "粘贴文字",
     chooseFont: "选择字体文件",
     uploadHint: "拖拽或点击上传",
     outputName: "输出名称",
     outputType: "输出格式",
-    subsetOptions: "子集选项",
-    includeLatin: "包含拉丁字符",
-    includeNumbers: "包含数字",
-    includeSymbols: "包含符号",
+    subsetOptions: "保留规则",
+    includeLatin: "拉丁字符",
+    includeNumbers: "数字",
+    includeSymbols: "符号",
     includeCjkPunctuation: "中文标点",
     compress: "压缩字体",
     compressing: "压缩中",
-    resultTitle: "预计结果",
+    resultTitle: "压缩结果",
     originalSize: "原始大小",
-    compressedSize: "压缩后大小",
-    glyphs: "字形数",
+    compressedSize: "压缩后",
+    glyphs: "字形",
     retained: "保留字形",
     smaller: "更小",
     download: "下载字体",
-    waitingDownload: "等待字体文件",
+    waitingDownload: "等待输出",
     previewTitle: "字体预览",
     original: "原字体",
     subset: "压缩后",
@@ -136,11 +155,22 @@ const copy = {
     noScripts: "无文字",
     inputAria: "需要保留的文字",
     formatHint: "TTF / OTF / WOFF / WOFF2",
+    textProfile: "文本概况",
+    selectedFile: "已载入",
+    waitingFile: "等待字体",
+    outputSettings: "输出设置",
+    process: "处理进度",
+    verification: "验证",
+    ready: "就绪",
+    savings: "压缩率",
+    specimen: "字样",
+    scripts: "文字系统",
+    format: "格式",
     status: {
       waitingFont: "等待字体文件",
       fontReady: "字体文件已就绪",
       outputChanged: "输出格式已更新",
-      optionsChanged: "子集选项已更新",
+      optionsChanged: "保留规则已更新",
       textChanged: "文字已更新",
       readingFile: "正在读取文件",
       readingTables: "正在读取字体表",
@@ -150,6 +180,12 @@ const copy = {
       doneVerified: "压缩完成，字体可加载",
       donePreviewFailed: "压缩完成，但预览验证失败",
       failed: "压缩失败",
+    },
+    steps: {
+      prepare: "准备",
+      subset: "子集化",
+      verify: "验证",
+      export: "导出",
     },
     preview: {
       noFont: "未选择字体",
@@ -183,27 +219,28 @@ const copy = {
     languageSwitch: "Language",
     zh: "中文",
     en: "EN",
+    labLabel: "Font subset studio",
     heroSubtitle: "Keep only the glyphs you need.",
     pasteText: "Paste Text",
     chooseFont: "Choose Font File",
     uploadHint: "Drag & drop or click to upload",
     outputName: "Output Name",
     outputType: "Output Type",
-    subsetOptions: "Subset Options",
-    includeLatin: "Include Latin",
-    includeNumbers: "Include Numbers",
-    includeSymbols: "Include Symbols",
+    subsetOptions: "Keep Rules",
+    includeLatin: "Latin",
+    includeNumbers: "Numbers",
+    includeSymbols: "Symbols",
     includeCjkPunctuation: "CJK Punctuation",
     compress: "Compress Font",
     compressing: "Compressing",
-    resultTitle: "Estimated Result",
-    originalSize: "Original Size",
-    compressedSize: "Compressed Size",
+    resultTitle: "Compression Result",
+    originalSize: "Original",
+    compressedSize: "Compressed",
     glyphs: "Glyphs",
     retained: "Retained",
     smaller: "smaller",
     download: "Download Font",
-    waitingDownload: "Waiting for font file",
+    waitingDownload: "Waiting",
     previewTitle: "Font Preview",
     original: "Original",
     subset: "Subset",
@@ -213,11 +250,22 @@ const copy = {
     noScripts: "No scripts",
     inputAria: "Text to keep",
     formatHint: "TTF / OTF / WOFF / WOFF2",
+    textProfile: "Text Profile",
+    selectedFile: "Loaded",
+    waitingFile: "Waiting",
+    outputSettings: "Output",
+    process: "Process",
+    verification: "Verification",
+    ready: "Ready",
+    savings: "Savings",
+    specimen: "Specimen",
+    scripts: "Scripts",
+    format: "Format",
     status: {
       waitingFont: "Waiting for font file",
       fontReady: "Font file ready",
       outputChanged: "Output format updated",
-      optionsChanged: "Subset options updated",
+      optionsChanged: "Keep rules updated",
       textChanged: "Text updated",
       readingFile: "Reading file",
       readingTables: "Reading font tables",
@@ -227,6 +275,12 @@ const copy = {
       doneVerified: "Compression complete, font loaded",
       donePreviewFailed: "Compression complete, preview failed",
       failed: "Compression failed",
+    },
+    steps: {
+      prepare: "Prepare",
+      subset: "Subset",
+      verify: "Verify",
+      export: "Export",
     },
     preview: {
       noFont: "No font",
@@ -300,6 +354,80 @@ export function FontCompressor() {
   const previewText = useMemo(() => getPreviewText(text), [text]);
   const t = copy[lang];
   const scriptSummary = formatScripts(scripts, lang);
+  const progressIndex = getProgressIndex(statusKey);
+  const progressPercent = getProgressPercent(statusKey, result);
+  const statusTone = getStatusTone(statusKey, Boolean(error), Boolean(result?.isVerified));
+  const topbarStatusLabel = getTopbarStatusLabel(statusKey, statusTone, Boolean(fontFile), lang);
+  const canCompress = !isCompressing && Boolean(fontFile) && codePoints.length > 0;
+  const outputFormatLabel = outputType.toUpperCase();
+  const optionItems: Array<{ key: keyof SubsetOptions; label: string }> = [
+    { key: "latin", label: t.includeLatin },
+    { key: "numbers", label: t.includeNumbers },
+    { key: "symbols", label: t.includeSymbols },
+    { key: "cjkPunctuation", label: t.includeCjkPunctuation },
+  ];
+  const metricItems = [
+    {
+      label: t.originalSize,
+      value: fontFile ? formatBytes(fontFile.size) : "--",
+    },
+    {
+      label: t.compressedSize,
+      value: result ? formatBytes(result.outputSize) : "--",
+    },
+    {
+      label: t.savings,
+      value: result ? `${reduction}%` : "--",
+    },
+    {
+      label: t.retained,
+      value: result ? String(result.retainedGlyphCount) : "--",
+    },
+  ];
+
+  useGSAP(
+    () => {
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      gsap.from(".motion-item", {
+        autoAlpha: 0,
+        y: reduceMotion ? 0 : 18,
+        duration: reduceMotion ? 0 : 0.7,
+        ease: "power3.out",
+        stagger: 0.055,
+      });
+
+      gsap.from(".workspace-panel", {
+        autoAlpha: 0,
+        y: reduceMotion ? 0 : 22,
+        duration: reduceMotion ? 0 : 0.72,
+        ease: "power3.out",
+        stagger: 0.06,
+        delay: reduceMotion ? 0 : 0.1,
+      });
+    },
+    { scope: appRef },
+  );
+
+  useGSAP(
+    () => {
+      if (!result) {
+        return;
+      }
+
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      gsap.from(".result-animate", {
+        autoAlpha: 0,
+        y: reduceMotion ? 0 : 12,
+        scale: reduceMotion ? 1 : 0.98,
+        duration: reduceMotion ? 0 : 0.45,
+        ease: "power2.out",
+        stagger: 0.04,
+      });
+    },
+    { dependencies: [result?.url], scope: appRef },
+  );
 
   useEffect(() => {
     appRef.current?.setAttribute("data-app-ready", "true");
@@ -599,54 +727,71 @@ export function FontCompressor() {
   return (
     <main
       ref={appRef}
-      className="min-h-screen overflow-hidden bg-sky-pixel text-[color:var(--ink)]"
+      className="font-app"
       data-app-ready="false"
       data-testid="font-compressor"
     >
       <div className="browser-shell">
-        <header className="nav-strip">
+        <div className="ambient-layer">
+          <TypeOrbitScene glyphs={previewText} isActive={isCompressing || Boolean(result)} />
+        </div>
+
+        <header className="topbar motion-item">
           <div className="brand">
             <span className="brand-icon">F</span>
-            <span>FONT</span>
-            <span className="gold">COMPRESSOR</span>
+            <span className="brand-copy">
+              <strong>FONT COMPRESSOR</strong>
+              <small>{t.labLabel}</small>
+            </span>
           </div>
-          <div className="language-switch" role="group" aria-label={t.languageSwitch}>
-            <button
-              aria-pressed={lang === "zh"}
-              className={lang === "zh" ? "is-active" : ""}
-              onClick={() => setLang("zh")}
-              type="button"
-            >
-              {t.zh}
-            </button>
-            <button
-              aria-pressed={lang === "en"}
-              className={lang === "en" ? "is-active" : ""}
-              onClick={() => setLang("en")}
-              type="button"
-            >
-              {t.en}
-            </button>
+
+          <div className="topbar-actions">
+            <span className="status-pill" data-tone={statusTone}>
+              {statusTone === "busy" ? <Loader2 size={15} /> : <CircleDot size={15} />}
+              {topbarStatusLabel}
+            </span>
+            <div className="language-switch" role="group" aria-label={t.languageSwitch}>
+              <Languages size={16} aria-hidden="true" />
+              <button
+                aria-pressed={lang === "zh"}
+                className={lang === "zh" ? "is-active" : ""}
+                onClick={() => setLang("zh")}
+                type="button"
+              >
+                {t.zh}
+              </button>
+              <button
+                aria-pressed={lang === "en"}
+                className={lang === "en" ? "is-active" : ""}
+                onClick={() => setLang("en")}
+                type="button"
+              >
+                {t.en}
+              </button>
+            </div>
           </div>
         </header>
 
         <section className="stage">
-          <div className="cloud cloud-left" />
-          <div className="cloud cloud-right" />
-          <div className="coin coin-one" />
-          <div className="coin coin-two" />
-
-          <div className="hero-title">
-            <h1>FONT COMPRESSOR</h1>
-            <p>{t.heroSubtitle}</p>
+          <div className="hero-panel motion-item">
+            <div>
+              <span className="eyebrow">
+                <Sparkles size={16} />
+                {t.labLabel}
+              </span>
+              <h1>FONT COMPRESSOR</h1>
+              <p>{t.heroSubtitle}</p>
+            </div>
+            <div className="hero-metrics" aria-label={t.textProfile}>
+              <MetricCompact label={t.glyphs} value={String(codePoints.length)} />
+              <MetricCompact label={t.scripts} value={scriptSummary || t.noScripts} />
+              <MetricCompact label={t.format} value={outputFormatLabel} />
+            </div>
           </div>
 
-          <div className="tool-grid">
-            <section className="pixel-panel text-panel">
-              <div className="panel-label">
-                <Type size={16} />
-                {t.pasteText}
-              </div>
+          <div className="workspace">
+            <section className="workspace-panel text-panel">
+              <PanelHeader icon={<Type size={18} />} title={t.pasteText} meta={t.textProfile} />
               <textarea
                 value={text}
                 onChange={(event) => handleTextChange(event.target.value)}
@@ -655,17 +800,15 @@ export function FontCompressor() {
               />
               <div className="panel-meta">
                 <span>
-                  {codePoints.length} {t.glyphs}
+                  <ScanDot /> {codePoints.length} {t.glyphs}
                 </span>
                 <span>{scriptSummary || t.noScripts}</span>
               </div>
             </section>
 
-            <section className="pixel-panel controls-panel">
-              <div className="panel-label">
-                <FileText size={16} />
-                {t.chooseFont}
-              </div>
+            <section className="workspace-panel controls-panel">
+              <PanelHeader icon={<FileText size={18} />} title={t.chooseFont} meta={t.outputSettings} />
+
               <button
                 className={`drop-zone ${isDragging ? "is-dragging" : ""}`}
                 onClick={() => fileInputRef.current?.click()}
@@ -674,13 +817,17 @@ export function FontCompressor() {
                 onDrop={handleDrop}
                 type="button"
               >
-                <Upload size={24} />
-                <span>{fontFile ? fontFile.name : t.uploadHint}</span>
-                <small>
-                  {fontFile && inputType
-                    ? `${inputType.toUpperCase()} • ${formatBytes(fontFile.size)}`
-                    : t.formatHint}
-                </small>
+                <span className="drop-icon">
+                  <Upload size={22} />
+                </span>
+                <span className="drop-copy">
+                  <strong>{fontFile ? fontFile.name : t.uploadHint}</strong>
+                  <small>
+                    {fontFile && inputType
+                      ? `${t.selectedFile} ${inputType.toUpperCase()} · ${formatBytes(fontFile.size)}`
+                      : t.formatHint}
+                  </small>
+                </span>
               </button>
               <input
                 ref={fileInputRef}
@@ -699,117 +846,129 @@ export function FontCompressor() {
                 />
               </div>
 
-              <div className="field-row two-col">
-                <label htmlFor="output-type">{t.outputType}</label>
-                <select
-                  id="output-type"
-                  value={outputType}
-                  onChange={(event) => updateOutputType(event.target.value as SupportedFontType)}
-                >
+              <div className="mode-field">
+                <span>{t.outputType}</span>
+                <div className="format-switch" role="radiogroup" aria-label={t.outputType}>
                   {outputTypes.map((type) => (
-                    <option key={type} value={type}>
+                    <button
+                      key={type}
+                      aria-checked={outputType === type}
+                      className={outputType === type ? "is-active" : ""}
+                      onClick={() => updateOutputType(type)}
+                      role="radio"
+                      type="button"
+                    >
+                      <FileType size={15} />
                       {type.toUpperCase()}
-                    </option>
+                    </button>
                   ))}
-                </select>
+                </div>
               </div>
 
               <div className="option-box">
                 <div className="option-title">
-                  <Settings size={16} />
+                  <SlidersHorizontal size={16} />
                   {t.subsetOptions}
                 </div>
                 <div className="option-grid">
-                  <label>
-                    <input
-                      checked={options.latin}
-                      onChange={() => toggleOption("latin")}
-                      type="checkbox"
-                    />
-                    {t.includeLatin}
-                  </label>
-                  <label>
-                    <input
-                      checked={options.numbers}
-                      onChange={() => toggleOption("numbers")}
-                      type="checkbox"
-                    />
-                    {t.includeNumbers}
-                  </label>
-                  <label>
-                    <input
-                      checked={options.symbols}
-                      onChange={() => toggleOption("symbols")}
-                      type="checkbox"
-                    />
-                    {t.includeSymbols}
-                  </label>
-                  <label>
-                    <input
-                      checked={options.cjkPunctuation}
-                      onChange={() => toggleOption("cjkPunctuation")}
-                      type="checkbox"
-                    />
-                    {t.includeCjkPunctuation}
-                  </label>
+                  {optionItems.map((item) => (
+                    <label key={item.key} className="toggle-row">
+                      <input
+                        checked={options[item.key]}
+                        onChange={() => toggleOption(item.key)}
+                        type="checkbox"
+                      />
+                      <span aria-hidden="true" />
+                      {item.label}
+                    </label>
+                  ))}
                 </div>
               </div>
             </section>
 
-            <aside className="pixel-panel result-panel">
+            <aside className="workspace-panel result-panel">
+              <PanelHeader icon={<Gauge size={18} />} title={t.resultTitle} meta={t.process} />
+
               <button
                 className="compress-button"
-                disabled={isCompressing || !fontFile || codePoints.length === 0}
+                disabled={!canCompress}
                 onClick={compressFont}
                 aria-busy={isCompressing}
                 type="button"
               >
-                <Zap size={22} />
+                {isCompressing ? <Loader2 size={20} /> : <Zap size={20} />}
                 {isCompressing ? t.compressing : t.compress}
               </button>
 
-              <div className="result-box">
-                <div className="result-title">{t.resultTitle}</div>
-                <dl>
-                  <div>
-                    <dt>{t.originalSize}</dt>
-                    <dd>{fontFile ? formatBytes(fontFile.size) : "--"}</dd>
-                  </div>
-                  <div>
-                    <dt>{t.compressedSize}</dt>
-                    <dd>{result ? formatBytes(result.outputSize) : "--"}</dd>
-                  </div>
-                  <div>
-                    <dt>{t.glyphs}</dt>
-                    <dd>{codePoints.length}</dd>
-                  </div>
-                  <div>
-                    <dt>{t.retained}</dt>
-                    <dd>{result ? result.retainedGlyphCount : "--"}</dd>
-                  </div>
-                </dl>
-                {result ? (
-                  <div className="success-note">
-                    {result.isVerified ? <CheckCircle2 size={18} /> : <AlertTriangle size={18} />}
-                    {result.isVerified ? `${reduction}% ${t.smaller}` : result.validationMessage}
-                  </div>
-                ) : null}
-                {result?.missingCodePoints.length ? (
-                  <div className="missing-note">
-                    {t.missing} {result.missingCodePoints.length}:{" "}
-                    {codePointsToText(result.missingCodePoints)}
-                  </div>
-                ) : null}
+              <div
+                className="progress-track"
+                style={{ "--progress": `${progressPercent}%` } as CSSProperties}
+              >
+                <span />
               </div>
 
+              <ol className="pipeline" aria-label={t.process}>
+                {[
+                  t.steps.prepare,
+                  t.steps.subset,
+                  t.steps.verify,
+                  t.steps.export,
+                ].map((label, index) => (
+                  <li
+                    key={label}
+                    className={
+                      index < progressIndex
+                        ? "is-complete"
+                        : index === progressIndex
+                          ? "is-current"
+                          : ""
+                    }
+                  >
+                    <span>{index + 1}</span>
+                    {label}
+                  </li>
+                ))}
+              </ol>
+
+              <dl className="result-box">
+                {metricItems.map((item) => (
+                  <div key={item.label} className="result-metric result-animate">
+                    <dt>{item.label}</dt>
+                    <dd>{item.value}</dd>
+                  </div>
+                ))}
+              </dl>
+
               {result ? (
-                <a className="download-button" href={result.url} download={result.fileName}>
+                <div className="success-note result-animate">
+                  {result.isVerified ? <ShieldCheck size={18} /> : <AlertTriangle size={18} />}
+                  <span>{result.isVerified ? `${reduction}% ${t.smaller}` : result.validationMessage}</span>
+                </div>
+              ) : (
+                <div className="idle-note">
+                  <Archive size={17} />
+                  {t.waitingDownload}
+                </div>
+              )}
+
+              {result?.missingCodePoints.length ? (
+                <div className="missing-note result-animate">
+                  {t.missing} {result.missingCodePoints.length}:{" "}
+                  {codePointsToText(result.missingCodePoints)}
+                </div>
+              ) : null}
+
+              {result ? (
+                <a className="download-button result-animate" href={result.url} download={result.fileName}>
                   <Download size={20} />
                   {t.download}
                 </a>
               ) : null}
 
-              <div className="status-line">{t.status[statusKey]}</div>
+              <div className="status-line" data-tone={statusTone}>
+                {statusTone === "success" ? <CheckCircle2 size={16} /> : <Settings size={16} />}
+                {t.status[statusKey]}
+              </div>
               {error ? (
                 <div className="error-line">
                   <AlertTriangle size={16} />
@@ -819,11 +978,8 @@ export function FontCompressor() {
             </aside>
           </div>
 
-          <section className="pixel-panel preview-panel">
-            <div className="panel-label">
-              <SearchCheck size={16} />
-              {t.previewTitle}
-            </div>
+          <section className="workspace-panel preview-panel">
+            <PanelHeader icon={<SearchCheck size={18} />} title={t.previewTitle} meta={t.specimen} />
             <div className="preview-grid">
               <FontPreviewCard
                 label={t.original}
@@ -843,18 +999,47 @@ export function FontCompressor() {
                 message={result?.validationMessage ?? t.preview.waitingSubset}
                 previewText={previewText}
                 sampleFamily={result?.isVerified ? result.fontFamily : undefined}
-                title={result ? result.fileName : `${t.outputPrefix} ${outputType.toUpperCase()}`}
+                title={result ? result.fileName : `${t.outputPrefix} ${outputFormatLabel}`}
               />
             </div>
           </section>
-
-          <div className="ground">
-            <div className="ground-top" />
-          </div>
         </section>
       </div>
     </main>
   );
+}
+
+function PanelHeader({
+  icon,
+  meta,
+  title,
+}: {
+  icon: ReactNode;
+  meta: string;
+  title: string;
+}) {
+  return (
+    <div className="panel-header">
+      <span className="panel-icon">{icon}</span>
+      <div>
+        <h2>{title}</h2>
+        <small>{meta}</small>
+      </div>
+    </div>
+  );
+}
+
+function MetricCompact({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="metric-compact">
+      <span>{label}</span>
+      <strong>{value}</strong>
+    </div>
+  );
+}
+
+function ScanDot() {
+  return <WandSparkles size={15} aria-hidden="true" />;
 }
 
 function FontPreviewCard({
@@ -873,7 +1058,10 @@ function FontPreviewCard({
   return (
     <article className="preview-card">
       <div className="preview-head">
-        <span>{label}</span>
+        <span>
+          <Layers2 size={16} />
+          {label}
+        </span>
         <small>{message}</small>
       </div>
       <div className="preview-file">{title}</div>
@@ -901,6 +1089,96 @@ function formatScripts(scripts: ScriptSummary[], lang: Lang) {
 
 function getPreviewMessage(key: PreviewMessageKey, lang: Lang, customMessage?: string) {
   return customMessage ?? copy[lang].preview[key];
+}
+
+function getProgressIndex(statusKey: StatusKey) {
+  if (statusKey === "doneVerified" || statusKey === "donePreviewFailed") {
+    return 3;
+  }
+
+  if (statusKey === "verifyingOutput") {
+    return 2;
+  }
+
+  if (
+    statusKey === "readingFile" ||
+    statusKey === "readingTables" ||
+    statusKey === "initWoff2" ||
+    statusKey === "generatingSubset"
+  ) {
+    return 1;
+  }
+
+  return 0;
+}
+
+function getProgressPercent(statusKey: StatusKey, result: CompressionResult | null) {
+  if (statusKey === "failed") {
+    return 100;
+  }
+
+  if (result || statusKey === "doneVerified" || statusKey === "donePreviewFailed") {
+    return 100;
+  }
+
+  if (statusKey === "verifyingOutput") {
+    return 78;
+  }
+
+  if (statusKey === "generatingSubset") {
+    return 62;
+  }
+
+  if (statusKey === "readingTables" || statusKey === "initWoff2") {
+    return 42;
+  }
+
+  if (statusKey === "readingFile") {
+    return 22;
+  }
+
+  return statusKey === "waitingFont" ? 6 : 14;
+}
+
+function getStatusTone(statusKey: StatusKey, hasError: boolean, isVerified: boolean) {
+  if (hasError || statusKey === "failed" || statusKey === "donePreviewFailed") {
+    return "error";
+  }
+
+  if (isVerified || statusKey === "doneVerified") {
+    return "success";
+  }
+
+  if (
+    statusKey === "readingFile" ||
+    statusKey === "readingTables" ||
+    statusKey === "initWoff2" ||
+    statusKey === "generatingSubset" ||
+    statusKey === "verifyingOutput"
+  ) {
+    return "busy";
+  }
+
+  return "ready";
+}
+
+function getTopbarStatusLabel(
+  statusKey: StatusKey,
+  statusTone: string,
+  hasFont: boolean,
+  lang: Lang,
+) {
+  const localized = copy[lang];
+
+  if (statusTone === "busy" || statusTone === "error") {
+    return localized.status[statusKey];
+  }
+
+  if (statusTone === "success") {
+    return localized.ready;
+  }
+
+  return hasFont ? localized.ready : localized.waitingFile;
 }
 
 async function loadPreviewFont(

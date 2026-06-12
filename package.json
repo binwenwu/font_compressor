@@ -14,12 +14,15 @@
     "verify": "npm run lint && npm run build && npm run test:e2e && npm audit --omit=dev"
   },
   "dependencies": {
+    "@gsap/react": "^2.1.2",
     "fonteditor-core": "^2.6.3",
+    "gsap": "^3.15.0",
     "lucide-react": "^1.16.0",
     "next": "16.2.6",
     "pako": "^2.1.0",
     "react": "19.2.6",
-    "react-dom": "19.2.6"
+    "react-dom": "19.2.6",
+    "three": "^0.184.0"
   },
   "overrides": {
     "postcss": "^8.5.15"
@@ -31,6 +34,7 @@
     "@types/pako": "^2.0.4",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/three": "^0.184.1",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "tailwindcss": "^4",
