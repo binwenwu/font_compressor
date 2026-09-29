@@ -1,5 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
+const deployedBaseURL = process.env.PLAYWRIGHT_BASE_URL;
+
 export default defineConfig({
   testDir: "./tests/e2e",
   outputDir: "test-results",
@@ -7,11 +9,11 @@ export default defineConfig({
   fullyParallel: true,
   reporter: [["list"], ["html", { open: "never" }]],
   use: {
-    baseURL: "http://localhost:3000",
+    baseURL: deployedBaseURL ?? "http://localhost:3000",
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
   },
-  webServer: {
+  webServer: deployedBaseURL ? undefined : {
     command: "npm run dev",
     url: "http://localhost:3000",
     reuseExistingServer: true,
